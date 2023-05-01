@@ -9,9 +9,72 @@
  *  NOTICE: The contract should revert when an unrecognized function is called
  */
 
+/** INTERFACE **/
 #define function add1(uint256) payable returns(uint256)
 
+/** MACROS and FUNCTIONS **/
+#define macro ADD1() = takes(0) returns(0) {
+    /**
+      @notice Load input data from calldata
+              - data offset is 0x04 due to func selector
+    **/
+    0x04          // [0x04]
+    calldataload  // [input]
+
+    /**
+      @notice Add input and 0x01
+    **/
+    0x01          // [0x01, input]
+    add           // [result]
+
+    /**
+      @notice Store result in memory
+    **/
+    0x00          // [0x00, result]
+    mstore        // []
+
+    /**
+      @notice Return value
+    **/
+    0x20 0x00 return
+}
 
 #define macro MAIN() = takes(0) returns(0) {
+    /**
+      @notice Load function selector, first 4 bytes
+              - push 0x00, offste for call data load
+              - load first 32 bytes
+              - push 0xe0, number of bits (224) necessary to shift right of 28 bytes, 
+                leaving only the 4 significant bytes of the selector
+    **/
+    0x00             // [0x00]
+    calldataload     // [0xA...]
+    0xe0             // [0xe0, 0xA...]
+    shr              // [0x00...00A...]
 
+    /**
+      @notice Jump to the add1 function if selector corresponds
+              - compute func selector
+              - check if received and computed selector are equal, 
+                eq takes first two elements of the stack
+              - jumpi takes two elements ProgramCounter (bytes offset in code, must be a JUMPDEST)
+                and condition [PC, condition], if condition == 0 the code will continue from a next line
+    **/
+    __FUNC_SIG(add1) // [computed_selector, 0x00...00A...]
+    eq               // [computed_selector == 0x00...00A...]
+    add1Jump         // [add1JumpLabel, computed_selector == 0x00...00A...]
+    jumpi            // []
+
+    /**
+      @notice Revert if there is no match
+    **/
+    0x20
+    0x00
+    revert
+    
+    /**
+      @notice list of JUMPDESTs
+    **/
+    add1Jump:
+      ADD1()
 }
