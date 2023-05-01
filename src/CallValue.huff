@@ -9,5 +9,23 @@
 */
 
 #define macro MAIN() = takes(0) returns(0) {
-    
+    /**
+      @notice Load msg.value onto the stack
+    **/
+    callvalue // [value]
+
+    /**
+      @notice Store value in memory, mstore takes two arguments [offset, value]
+    **/
+    0x00      // [0x00, value]
+    mstore    // []
+
+    /**
+      @notice Return first 32 bytes, return takes two arguments [offset, length]
+              Since msg.value is a fixed length element (uint256), 
+              returning the first 32bytes slot is enough
+    **/
+    0x20      // [0x20]
+    0x00      // [0x00, 0x20]
+    return    // []
 }
