@@ -23,7 +23,7 @@
     /**
       @notice Return first 32 bytes, return takes two arguments [offset, length]
               Since size is a fixed length element (uint256), 
-              returning the first 32bytes slot is enough
+              return the first 32bytes slot is enough
     **/
     0x20      // [0x20]
     0x00      // [0x00, 0x20]
