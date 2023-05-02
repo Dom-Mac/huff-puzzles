@@ -62,15 +62,13 @@
     **/
     __FUNC_SIG(add1) // [computed_selector, 0x00...00A...]
     eq               // [computed_selector == 0x00...00A...]
-    add1Jump         // [add1JumpLabel, computed_selector == 0x00...00A...]
+    add1Jump         // [add1JumpOffset, computed_selector == 0x00...00A...]
     jumpi            // []
 
     /**
       @notice Revert if there is no match
     **/
-    0x20
-    0x00
-    revert
+    0x20 0x00 revert
     
     /**
       @notice list of JUMPDESTs
