@@ -42,50 +42,50 @@
     mul           // [result, inputTwo, inputOne]
 
     /**
-      @notice return 0 if result is 0
+      @notice return 0 if result is 0, otherwise jump to isNot0Jump
     **/
     dup1          // [result, result, inputTwo, inputOne]
-    0x00          // [0x00, result, result, inputTwo, inputOne]
-    eq            // [0x00 == result, result, inputTwo, inputOne]
-    return0Jump   // [return0Jumpdest, 0x00 == result, result, inputTwo, inputOne]
+    isNot0Jump    // [return0Jumpdest, result, result, inputTwo, inputOne]
     jumpi         // [result, inputTwo, inputOne]
-
-    /**
-      @notice Before performing checks, place elements in the right order
-    **/
-    swap1         // [inputTwo, result, inputOne]
-    dup2          // [result, inputTwo, result, inputOne]
-
-    /**
-      @notice Perform first overflow check
-    **/
-    lt            // [result < inputTwo, result, inputOne]
-    revertJump    // [revertJumpDest, result < inputTwo, result, inputOne]
-    jumpi         // [result, inputOne]
-
-    /**
-      @notice Before performing second check, swap position and duplicate the result to eventually return
-    **/
-    swap1          // [inputOne, result]
-    dup2           // [result, inputOne, result]
-
-    /**
-      @notice Perform second overflow check
-    **/
-    lt            // [result < inputOne, result]
-    revertJump    // [revertJumpDest, result < inputOne, result]
-    jumpi         // [result]
-
-    /**
-      @notice Store result in memory
-    **/
-    0x00          // [0x00, result]
-    mstore        // []
-
-    /**
-      @notice Return value
-    **/
     0x20 0x00 return
+    
+    isNot0Jump:
+      /**
+        @notice Before performing checks, place elements in the right order
+      **/
+      swap1         // [inputTwo, result, inputOne]
+      dup2          // [result, inputTwo, result, inputOne]
+
+      /**
+        @notice Perform first overflow check
+      **/
+      lt            // [result < inputTwo, result, inputOne]
+      revertJump    // [revertJumpDest, result < inputTwo, result, inputOne]
+      jumpi         // [result, inputOne]
+
+      /**
+        @notice Before performing second check, swap position and duplicate the result to eventually return
+      **/
+      swap1          // [inputOne, result]
+      dup2           // [result, inputOne, result]
+
+      /**
+        @notice Perform second overflow check
+      **/
+      lt            // [result < inputOne, result]
+      revertJump    // [revertJumpDest, result < inputOne, result]
+      jumpi         // [result]
+
+      /**
+        @notice Store result in memory
+      **/
+      0x00          // [0x00, result]
+      mstore        // []
+
+      /**
+        @notice Return value
+      **/
+      0x20 0x00 return
 
     /**
       @notice Revert JUMPDEST
